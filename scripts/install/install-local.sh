@@ -106,6 +106,30 @@ chmod 0755 "$INSTALL_SHARED/codex.js" "$INSTALL_SHARED/codex"
 ln -sf "../share/codex/codex.js" "$INSTALL_BIN/codex"
 
 # ---------------------------------------------------------------------------
+# Write uninstall script
+# ---------------------------------------------------------------------------
+UNINSTALL_SCRIPT="$INSTALL_BIN/uninstall-codex"
+cat >"$UNINSTALL_SCRIPT" <<UNINSTALL_EOF
+#!/bin/sh
+# uninstall-codex — remove files installed by install-local.sh
+set -eu
+
+INSTALL_BIN="$INSTALL_BIN"
+INSTALL_SHARED="$INSTALL_SHARED"
+
+printf 'Removing Codex files...\n'
+rm -f "\$INSTALL_BIN/codex"
+rm -f "\$INSTALL_BIN/uninstall-codex"
+rm -f "\$INSTALL_SHARED/codex.js"
+rm -f "\$INSTALL_SHARED/codex"
+rmdir "\$INSTALL_SHARED" 2>/dev/null || true
+
+printf 'Codex uninstalled.\n'
+printf 'Note: PATH entries added to shell profiles were not removed.\n'
+UNINSTALL_EOF
+chmod 0755 "$UNINSTALL_SCRIPT"
+
+# ---------------------------------------------------------------------------
 # PATH
 # ---------------------------------------------------------------------------
 add_to_path
@@ -128,6 +152,7 @@ configured)
 esac
 
 printf 'Codex installed successfully from source.\n'
-printf '  binary:  %s/codex\n' "$INSTALL_SHARED"
-printf '  wrapper: %s/codex.js\n' "$INSTALL_SHARED"
-printf '  bin:     %s/codex -> ../share/codex/codex.js\n' "$INSTALL_BIN"
+printf '  binary:    %s/codex\n' "$INSTALL_SHARED"
+printf '  wrapper:   %s/codex.js\n' "$INSTALL_SHARED"
+printf '  bin:       %s/codex -> ../share/codex/codex.js\n' "$INSTALL_BIN"
+printf '  uninstall: %s/uninstall-codex\n' "$INSTALL_BIN"
