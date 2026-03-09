@@ -2781,9 +2781,14 @@ impl ChatComposer {
             } if !self.is_bang_shell_command() => self.handle_submission(self.is_task_running),
             KeyEvent {
                 code: KeyCode::Enter,
+                modifiers: KeyModifiers::SHIFT,
+                ..
+            } if self.use_shift_enter_hint => self.handle_submission(false),
+            KeyEvent {
+                code: KeyCode::Enter,
                 modifiers: KeyModifiers::NONE,
                 ..
-            } => self.handle_submission(false),
+            } if !self.use_shift_enter_hint => self.handle_submission(false),
             input => self.handle_input_basic(input),
         }
     }

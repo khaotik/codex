@@ -83,13 +83,19 @@ const localBinaryPath = path.join(
   "codex",
   codexBinaryName,
 );
+const siblingBinaryPath = path.join(__dirname, codexBinaryName);
 
 let vendorRoot;
+let binaryPath;
+let archRoot;
 try {
   const packageJsonPath = require.resolve(`${platformPackage}/package.json`);
   vendorRoot = path.join(path.dirname(packageJsonPath), "vendor");
 } catch {
-  if (existsSync(localBinaryPath)) {
+  if (existsSync(siblingBinaryPath)) {
+    // Local install: binary lives alongside codex.js; skip vendorRoot machinery.
+    binaryPath = siblingBinaryPath;
+  } else if (existsSync(localBinaryPath)) {
     vendorRoot = localVendorRoot;
   } else {
     const packageManager = detectPackageManager();
@@ -103,7 +109,7 @@ try {
   }
 }
 
-if (!vendorRoot) {
+if (!vendorRoot && !binaryPath) {
   const packageManager = detectPackageManager();
   const updateCommand =
     packageManager === "bun"
@@ -114,8 +120,10 @@ if (!vendorRoot) {
   );
 }
 
-const archRoot = path.join(vendorRoot, targetTriple);
-const binaryPath = path.join(archRoot, "codex", codexBinaryName);
+if (!binaryPath) {
+  archRoot = path.join(vendorRoot, targetTriple);
+  binaryPath = path.join(archRoot, "codex", codexBinaryName);
+}
 
 // Use an asynchronous spawn instead of spawnSync so that Node is able to
 // respond to signals (e.g. Ctrl-C / SIGINT) while the native binary is
@@ -159,9 +167,11 @@ function detectPackageManager() {
 }
 
 const additionalDirs = [];
-const pathDir = path.join(archRoot, "path");
-if (existsSync(pathDir)) {
-  additionalDirs.push(pathDir);
+if (archRoot) {
+  const pathDir = path.join(archRoot, "path");
+  if (existsSync(pathDir)) {
+    additionalDirs.push(pathDir);
+  }
 }
 const updatedPath = getUpdatedPath(additionalDirs);
 
