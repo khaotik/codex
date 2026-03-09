@@ -2785,8 +2785,8 @@ impl ChatComposer {
                 ..
             } if self.use_shift_enter_hint => self.handle_submission(false),
             KeyEvent {
-                code: KeyCode::Enter,
-                modifiers: KeyModifiers::NONE,
+                code: KeyCode::Char('j'),
+                modifiers: KeyModifiers::CONTROL,
                 ..
             } if !self.use_shift_enter_hint => self.handle_submission(false),
             input => self.handle_input_basic(input),

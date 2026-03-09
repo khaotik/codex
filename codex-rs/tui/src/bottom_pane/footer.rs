@@ -900,7 +900,7 @@ const SHORTCUTS: &[ShortcutDescriptor] = &[
         id: ShortcutId::InsertNewline,
         bindings: &[
             ShortcutBinding {
-                key: key_hint::plain(KeyCode::Enter),
+                key: key_hint::shift(KeyCode::Enter),
                 condition: DisplayCondition::WhenShiftEnterHint,
             },
             ShortcutBinding {
@@ -909,7 +909,7 @@ const SHORTCUTS: &[ShortcutDescriptor] = &[
             },
         ],
         prefix: "",
-        label: " for newline",
+        label: " to submit",
     },
     ShortcutDescriptor {
         id: ShortcutId::QueueMessageTab,
